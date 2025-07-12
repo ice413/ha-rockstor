@@ -1,7 +1,7 @@
 {
   "domain": "rockstor_nas",
   "name": "Rockstor NAS",
-  "version": "0.0.1",
+  "version": "0.0.2",
   "documentation": "https://github.com/ice413/ha-rockstore.git",
   "requirements": ["requests"],
   "codeowners": ["@ice413"],
