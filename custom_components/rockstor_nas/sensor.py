@@ -1,35 +1,45 @@
 from homeassistant.helpers.update_coordinator import CoordinatorEntity
-from homeassistant.helpers.entity import Entity
+from homeassistant.components.sensor import SensorEntity
 from .const import DOMAIN
+import logging
+
+_LOGGER = logging.getLogger(__name__)
 
 async def async_setup_entry(hass, entry, async_add_entities):
     coordinator = hass.data[DOMAIN][entry.entry_id]
     pool_stats = coordinator.data
 
+    _LOGGER.debug("Rockstor sensor setup: coordinator data = %s", pool_stats)
+
     sensors = []
     for pool in pool_stats:
+        _LOGGER.debug("Creating sensors for pool: %s", pool)
         name = pool["name"]
-        sensors.append(RockstorPoolSensor(coordinator, name, "used", pool["used"]))
-        sensors.append(RockstorPoolSensor(coordinator, name, "free", pool["free"]))
-        sensors.append(RockstorPoolSensor(coordinator, name, "size", pool["size"]))
+        sensors.append(RockstorPoolSensor(coordinator, name, "used"))
+        sensors.append(RockstorPoolSensor(coordinator, name, "free"))
+        sensors.append(RockstorPoolSensor(coordinator, name, "size"))
 
     async_add_entities(sensors, True)
 
-class RockstorPoolSensor(CoordinatorEntity, Entity):
-    def __init__(self, coordinator, pool_name, metric, value):
+class RockstorPoolSensor(CoordinatorEntity, SensorEntity):
+    _attr_should_poll = False
+
+    def __init__(self, coordinator, pool_name, metric):
         super().__init__(coordinator)
         self._pool_name = pool_name
         self._metric = metric
         self._attr_name = f"Rockstor Pool {pool_name} {metric.capitalize()}"
         self._attr_unique_id = f"rockstor_{pool_name}_{metric}"
-        self._attr_native_unit_of_measurement = "MB"
+        self._attr_native_unit_of_measurement = "GB"
         self._attr_device_class = "data_size"
 
     @property
     def native_value(self):
-        # Get the latest value from the coordinator
         for pool in self.coordinator.data:
             if pool["name"] == self._pool_name:
-                return pool[self._metric]
+                value = pool[self._metric]
+                _LOGGER.debug("Getting value for %s - %s: %s", self._pool_name, self._metric, value)
+                return value
+        _LOGGER.warning("No data found for pool %s", self._pool_name)
         return None
 

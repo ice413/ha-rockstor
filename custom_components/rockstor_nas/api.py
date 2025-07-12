@@ -4,7 +4,6 @@ import urllib3
 
 urllib3.disable_warnings(urllib3.exceptions.InsecureRequestWarning)
 
-
 class RockstorAPI:
     def __init__(self, host, username, password, verify_ssl=False):
         self._host = host.rstrip("/")
@@ -15,6 +14,7 @@ class RockstorAPI:
             "Content-Type": "application/json"
         })
 
+
     def get_pool_stats(self):
         url = f"{self._host}/api/pools"
         try:
@@ -22,24 +22,21 @@ class RockstorAPI:
             response.raise_for_status()
             data = response.json()
             pools = data.get("results", [])
-            return [
+
+            parsed_pools = [
                 {
                     "name": pool["name"],
-                    "size": pool["size"],
-                    "free": pool["free"],
-                    "used": pool["size"] - pool["free"]
+                    "size": round(int(pool["size"]) / 1024 / 1024, 2),
+                    "free": round(int(pool["free"]) / 1024 / 1024, 2),
+                    "used": round((int(pool["size"]) - int(pool["free"])) / 1024 / 1024, 2)
                 }
                 for pool in pools
             ]
+
+            print("✅ Parsed pool stats (GB):", parsed_pools)
+            return parsed_pools
+
         except requests.RequestException as e:
             print("❌ Failed to fetch pool stats:", e)
             return []
 
-
-#Endpoint	Description
-#/api/pools/	List/Create storage pools
-#/api/shares/	List/Create/Manage shares
-#/api/snapshots/	List/Create snapshots
-#/api/disks/	List physical disks
-#/api/smart/	SMART status of drives
-#/api/system/	System info
