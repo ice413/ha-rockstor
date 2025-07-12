@@ -11,8 +11,12 @@ Home assistant Integration for Rockstor NAS
 5. restart HA
 
 ## Sensors:
+For each pool you get these sensors:
 | Entity ID | State | Attributes |
 |-----------|-------|------------|
 Rockstor Pool familyPool Free | 807.83 | unit_of_measurement: GB,  device_class: data_size,  friendly_name: Rockstor Pool familyPool Free  
 Rockstor Pool familyPool Size | 931.51 | unit_of_measurement: GB,device_class: data_size, friendly_name: Rockstor Pool familyPool Size
 Rockstor Pool familyPool Used | 123.68 | unit_of_measurement: GB, device_class: data_size, friendly_name: Rockstor Pool familyPool Used
+
+
+## To be continued...
