@@ -17,7 +17,7 @@ class RockstorNasConfigFlow(config_entries.ConfigFlow, domain=DOMAIN):
 
             api = RockstorAPI(host, username, password)
             try:
-                await api.get_pool_stats()
+                await self.hass.async_add_executor_job(api.get_pool_stats)
             except Exception:
                 errors["base"] = "cannot_connect"
             else:
@@ -30,8 +30,6 @@ class RockstorNasConfigFlow(config_entries.ConfigFlow, domain=DOMAIN):
                         "update_interval": update_interval,
                     },
                 )
-            finally:
-                await api.close()
 
         data_schema = vol.Schema({
             vol.Required("host"): str,
