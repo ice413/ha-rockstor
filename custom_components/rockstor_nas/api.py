@@ -67,7 +67,7 @@ class RockstorAPI:
             return []
 
     def get_installed_rockons(self):
-    """ Fetch all Rock-ons with state 'installed' and return their status. """
+        """ Fetch all Rock-ons with state 'installed' and return their status. """
     installed_rockons = []
     url = f"{self._host}/api/rockons"
 
