@@ -31,25 +31,16 @@ class RockstorPoolSensor(CoordinatorEntity, SensorEntity):
         self._attr_name = f"Rockstor Pool {pool_name} {metric.capitalize()}"
         self._attr_unique_id = f"rockstor_{pool_name}_{metric}"
         self._attr_native_unit_of_measurement = "GB"
-        #self._attr_device_class = "data_size"
+        self._attr_state_class = "measurement"
+        self._attr_suggested_display_precision = 2
 
     @property
-        def native_value(self):
-            for pool in self.coordinator.data:
-                if pool["name"] == self._pool_name:
-                    value = pool[self._metric]
-                    # Convert if necessary
-                    # value = value_in_mb / 1024 if needed
-                    return round(value, 2)
-            return None
-
-    #@property
-    #def native_value(self):
-    #    for pool in self.coordinator.data:
-    #        if pool["name"] == self._pool_name:
-    #            value = pool[self._metric]
-    #            _LOGGER.debug("Getting value for %s - %s: %s", self._pool_name, self._metric, value)
-    #            return value
-    #    _LOGGER.warning("No data found for pool %s", self._pool_name)
-    #    return None
+    def native_value(self):
+        for pool in self.coordinator.data:
+            if pool["name"] == self._pool_name:
+                value = pool[self._metric]
+                # Convert if necessary
+                # value = value_in_mb / 1024 if needed
+                return round(value, 2)
+        return None
 
