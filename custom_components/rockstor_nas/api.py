@@ -41,7 +41,7 @@ class RockstorAPI:
             return []
 
 
-def get_share_stats(self):
+    def get_share_stats(self):
         url = f"{self._host}/api/shares"
         try:
             response = self._session.get(url, verify=self._verify_ssl)
