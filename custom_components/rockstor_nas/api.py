@@ -54,7 +54,7 @@ class RockstorAPI:
                     "name": share["name"],
                     "size": round(int(share["size"]) / 1024 / 1024, 2),
                     "free": round(int(share["free"]) / 1024 / 1024, 2),
-                    "used": round((int(share["size"]) - int(pool["free"])) / 1024 / 1024, 2)
+                    "used": round((int(share["size"]) - int(share["free"])) / 1024 / 1024, 2)
                 }
                 for share in shares
             ]
