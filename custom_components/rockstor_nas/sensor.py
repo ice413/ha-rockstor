@@ -9,9 +9,11 @@ async def async_setup_entry(hass, entry, async_add_entities):
     coordinator = hass.data[DOMAIN][entry.entry_id]
     pool_stats = coordinator.data.get("pools", [])
     share_stats = coordinator.data.get("shares", [])
+    rockon_stats = coordinator.data.get("rockons", [])
 
     _LOGGER.debug("Rockstor sensor setup: pool_stats = %s", pool_stats)
     _LOGGER.debug("Rockstor sensor setup: share_stats = %s", share_stats)
+    _LOGGER.debug("Rockstor sensor setup: rockon_stats = %s", rockon_stats)
 
     sensors = []
 
@@ -29,7 +31,11 @@ async def async_setup_entry(hass, entry, async_add_entities):
         sensors.append(RockstorShareSensor(coordinator, name, "free"))
         sensors.append(RockstorShareSensor(coordinator, name, "size"))
 
+    # Rock-on sensor
+    sensors.append(RockstorRockonSensor(coordinator))
+
     async_add_entities(sensors, True)
+
 
 
 class RockstorPoolSensor(CoordinatorEntity, SensorEntity):
@@ -72,4 +78,24 @@ class RockstorShareSensor(CoordinatorEntity, SensorEntity):
             if share["name"] == self._share_name:
                 return round(share[self._metric], 2)
         return None
-    
+
+class RockstorRockonSensor(CoordinatorEntity, SensorEntity):
+    _attr_should_poll = False
+    _attr_native_unit_of_measurement = None
+    _attr_icon = "mdi:docker"
+
+    def __init__(self, coordinator):
+        super().__init__(coordinator)
+        self._attr_name = "Rockstor Started Rock-ons"
+        self._attr_unique_id = "rockstor_started_rockons"
+        self._attr_state_class = None
+
+    @property
+    def native_value(self):
+        return len(self.coordinator.data.get("rockons", []))
+
+    @property
+    def extra_state_attributes(self):
+        return {
+            "started_rockons": [rockon["name"] for rockon in self.coordinator.data.get("rockons", [])]
+        }

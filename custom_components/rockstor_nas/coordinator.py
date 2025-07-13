@@ -26,6 +26,7 @@ class RockstorCoordinator(DataUpdateCoordinator):
         """Fetch both pool and share stats."""
         return {
             "pools": self.api.get_pool_stats(),
-            "shares": self.api.get_share_stats()
+            "shares": self.api.get_share_stats(),
+            "rockons": self.api.get_started_rockons()
         }
 
