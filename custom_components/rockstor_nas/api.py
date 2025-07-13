@@ -68,35 +68,35 @@ class RockstorAPI:
 
     def get_installed_rockons(self):
         """ Fetch all Rock-ons with state 'installed' and return their status. """
-    installed_rockons = []
-    url = f"{self._host}/api/rockons"
+        installed_rockons = []
+        url = f"{self._host}/api/rockons"
 
-    while url:
-        try:
-            response = self._session.get(url, verify=self._verify_ssl)
-            response.raise_for_status()
-            data = response.json()
+        while url:
+            try:
+                response = self._session.get(url, verify=self._verify_ssl)
+                response.raise_for_status()
+                data = response.json()
 
-            # Filter only those with state "installed"
-            installed = [
-                {
-                    "name": rockon.get("name"),
-                    "status": rockon.get("status")
-                }
-                for rockon in data.get("results", [])
-                if rockon.get("state") == "installed"
-            ]
-            installed_rockons.extend(installed)
+                # Filter only those with state "installed"
+                installed = [
+                    {
+                        "name": rockon.get("name"),
+                        "status": rockon.get("status")
+                    }
+                    for rockon in data.get("results", [])
+                    if rockon.get("state") == "installed"
+                ]
+                installed_rockons.extend(installed)
 
-            # Follow pagination
-            url = data.get("next")
+                # Follow pagination
+                url = data.get("next")
 
-        except requests.RequestException as e:
-            print("❌ Failed to fetch rock-ons:", e)
-            break
+            except requests.RequestException as e:
+                print("❌ Failed to fetch rock-ons:", e)
+                break
 
-    print("✅ Installed Rock-ons:", installed_rockons)
-    return installed_rockons
+        print("✅ Installed Rock-ons:", installed_rockons)
+        return installed_rockons
 
 
 #Endpoint	Description
