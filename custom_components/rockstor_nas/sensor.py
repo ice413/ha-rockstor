@@ -44,3 +44,25 @@ class RockstorPoolSensor(CoordinatorEntity, SensorEntity):
                 return round(value, 2)
         return None
 
+class RockstorShareSensor(CoordinatorEntity, SensorEntity):
+    _attr_should_poll = False
+
+    def __init__(self, coordinator, share_name, metric):
+        super().__init__(coordinator)
+        self._share_name = share_name
+        self._metric = metric
+        self._attr_name = f"Rockstor Share {share_name} {metric.capitalize()}"
+        self._attr_unique_id = f"rockstor_{share_name}_{metric}"
+        self._attr_native_unit_of_measurement = "GB"
+        self._attr_state_class = "measurement"
+        self._attr_suggested_display_precision = 2
+
+    @property
+    def native_value(self):
+        for share in self.coordinator.data:
+            if share["name"] == self._share_name:
+                value = share[self._metric]
+                # Convert if necessary
+                # value = value_in_mb / 1024 if needed
+                return round(value, 2)
+        return None
