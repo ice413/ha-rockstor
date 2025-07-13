@@ -7,19 +7,30 @@ _LOGGER = logging.getLogger(__name__)
 
 async def async_setup_entry(hass, entry, async_add_entities):
     coordinator = hass.data[DOMAIN][entry.entry_id]
-    pool_stats = coordinator.data
+    pool_stats = coordinator.data.get("pools", [])
+    share_stats = coordinator.data.get("shares", [])
 
-    _LOGGER.debug("Rockstor sensor setup: coordinator data = %s", pool_stats)
+    _LOGGER.debug("Rockstor sensor setup: pool_stats = %s", pool_stats)
+    _LOGGER.debug("Rockstor sensor setup: share_stats = %s", share_stats)
 
     sensors = []
+
+    # Pool sensors
     for pool in pool_stats:
-        _LOGGER.debug("Creating sensors for pool: %s", pool)
         name = pool["name"]
         sensors.append(RockstorPoolSensor(coordinator, name, "used"))
         sensors.append(RockstorPoolSensor(coordinator, name, "free"))
         sensors.append(RockstorPoolSensor(coordinator, name, "size"))
 
+    # Share sensors
+    for share in share_stats:
+        name = share["name"]
+        sensors.append(RockstorShareSensor(coordinator, name, "used"))
+        sensors.append(RockstorShareSensor(coordinator, name, "free"))
+        sensors.append(RockstorShareSensor(coordinator, name, "size"))
+
     async_add_entities(sensors, True)
+
 
 class RockstorPoolSensor(CoordinatorEntity, SensorEntity):
     _attr_should_poll = False

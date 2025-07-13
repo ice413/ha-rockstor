@@ -18,6 +18,21 @@ class RockstorCoordinator(DataUpdateCoordinator):
     async def _async_update_data(self):
         """Fetch data from the Rockstor NAS API."""
         try:
+            return await self.hass.async_add_executor_job(self._fetch_all_stats)
+        except Exception as err:
+            raise UpdateFailed(f"Error fetching data from Rockstor: {err}") from err
+    
+    def _fetch_all_stats(self):
+        """Fetch both pool and share stats."""
+        return {
+            "pools": self.api.get_pool_stats(),
+            "shares": self.api.get_share_stats()
+        }
+    
+
+    async def _async_update_data(self):
+        """Fetch data from the Rockstor NAS API."""
+        try:
             return await self.hass.async_add_executor_job(self.api.get_pool_stats)
         except Exception as err:
             raise UpdateFailed(f"Error fetching data from Rockstor: {err}") from err
