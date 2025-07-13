@@ -48,23 +48,24 @@ class RockstorAPI:
             response.raise_for_status()
             data = response.json()
             shares = data.get("results", [])
-
+    
             parsed_shares = [
                 {
                     "name": share["name"],
-                    "size": round(int(share["size"]) / 1024 / 1024, 2),
-                    "free": round(int(share["free"]) / 1024 / 1024, 2),
-                    "used": round((int(share["size"]) - int(share["free"])) / 1024 / 1024, 2)
+                    "size": round(int(share["size"]) / 1024 / 1024, 2),  # Total allocated size
+                    "used": round(int(share["rusage"]) / 1024 / 1024, 2),  # Actual used space
+                    "free": round((int(share["size"]) - int(share["rusage"])) / 1024 / 1024, 2)  # Remaining space
                 }
                 for share in shares
             ]
-
+    
             print("✅ Parsed share stats (GB):", parsed_shares)
             return parsed_shares
-
+    
         except requests.RequestException as e:
             print("❌ Failed to fetch share stats:", e)
             return []
+
 
 #Endpoint	Description
 #/api/pools/	List/Create storage pools **
