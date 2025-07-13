@@ -47,13 +47,11 @@ class RockstorPoolSensor(CoordinatorEntity, SensorEntity):
 
     @property
     def native_value(self):
-        for pool in self.coordinator.data:
+        for pool in self.coordinator.data["pools"]:
             if pool["name"] == self._pool_name:
-                value = pool[self._metric]
-                # Convert if necessary
-                # value = value_in_mb / 1024 if needed
-                return round(value, 2)
+                return round(pool[self._metric], 2)
         return None
+
 
 class RockstorShareSensor(CoordinatorEntity, SensorEntity):
     _attr_should_poll = False
@@ -70,10 +68,8 @@ class RockstorShareSensor(CoordinatorEntity, SensorEntity):
 
     @property
     def native_value(self):
-        for share in self.coordinator.data:
+        for share in self.coordinator.data["shares"]:
             if share["name"] == self._share_name:
-                value = share[self._metric]
-                # Convert if necessary
-                # value = value_in_mb / 1024 if needed
-                return round(value, 2)
+                return round(share[self._metric], 2)
         return None
+    
