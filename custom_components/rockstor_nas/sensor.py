@@ -94,12 +94,12 @@ class RockstorRockonSensor(CoordinatorEntity, SensorEntity):
     def native_value(self):
         return len(self.coordinator.data.get("rockons", []))
 
-@property
-def extra_state_attributes(self):
-    return {
-        "Installed": {
-            rockon["name"]: rockon["status"]
-            for rockon in self.coordinator.data.get("rockons", [])
+    @property
+    def extra_state_attributes(self):
+        return {
+            "Installed": {
+                rockon["name"]: rockon["status"]
+                for rockon in self.coordinator.data.get("rockons", [])
+            }
         }
-    }
 
