@@ -27,6 +27,6 @@ class RockstorCoordinator(DataUpdateCoordinator):
         return {
             "pools": self.api.get_pool_stats(),
             "shares": self.api.get_share_stats(),
-            "rockons": self.api.get_started_rockons()
+            "rockons": self.api.get_installed_rockons()
         }
 

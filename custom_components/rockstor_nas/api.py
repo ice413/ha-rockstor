@@ -66,31 +66,38 @@ class RockstorAPI:
             print("❌ Failed to fetch share stats:", e)
             return []
 
-    def get_started_rockons(self):
-        """Fetch all Rock-ons with status 'started' across all pages."""
-        started_rockons = []
-        url = f"{self._host}/api/rockons"
-    
-        while url:
-            try:
-                response = self._session.get(url, verify=self._verify_ssl)
-                response.raise_for_status()
-                data = response.json()
-    
-                # Filter only those with status "started"
-                started = [rockon for rockon in data.get("results", []) if rockon.get("status") == "started"]
-                started_rockons.extend(started)
-    
-                # Follow the next page link (e.g., ?page=2)
-                url = data.get("next")
-    
-            except requests.RequestException as e:
-                print("❌ Failed to fetch rock-ons:", e)
-                break
-            
-        print("✅ Started Rock-ons:", started_rockons)
-        return started_rockons
-    
+    def get_installed_rockons(self):
+    """Fetch all Rock-ons with state 'installed' and return their status."""
+    installed_rockons = []
+    url = f"{self._host}/api/rockons"
+
+    while url:
+        try:
+            response = self._session.get(url, verify=self._verify_ssl)
+            response.raise_for_status()
+            data = response.json()
+
+            # Filter only those with state "installed"
+            installed = [
+                {
+                    "name": rockon.get("name"),
+                    "status": rockon.get("status")
+                }
+                for rockon in data.get("results", [])
+                if rockon.get("state") == "installed"
+            ]
+            installed_rockons.extend(installed)
+
+            # Follow pagination
+            url = data.get("next")
+
+        except requests.RequestException as e:
+            print("❌ Failed to fetch rock-ons:", e)
+            break
+
+    print("✅ Installed Rock-ons:", installed_rockons)
+    return installed_rockons
+
 
 #Endpoint	Description
 #/api/pools/	List/Create storage pools **

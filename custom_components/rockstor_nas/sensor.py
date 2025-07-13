@@ -86,8 +86,8 @@ class RockstorRockonSensor(CoordinatorEntity, SensorEntity):
 
     def __init__(self, coordinator):
         super().__init__(coordinator)
-        self._attr_name = "Rockstor Started Rock-ons"
-        self._attr_unique_id = "rockstor_started_rockons"
+        self._attr_name = "Rockstor Installed Rock-ons"
+        self._attr_unique_id = "rockstor_installed_rock_ons"
         self._attr_state_class = None
 
     @property
@@ -97,5 +97,6 @@ class RockstorRockonSensor(CoordinatorEntity, SensorEntity):
     @property
     def extra_state_attributes(self):
         return {
-            "started_rockons": [rockon["name"] for rockon in self.coordinator.data.get("rockons", [])]
+            rockon["name"]: rockon["status"]
+            for rockon in self.coordinator.data.get("rockons", [])
         }
