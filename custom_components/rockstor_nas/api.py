@@ -97,12 +97,3 @@ class RockstorAPI:
 
         print("✅ Installed Rock-ons:", installed_rockons)
         return installed_rockons
-
-
-#Endpoint	Description
-#/api/pools/	List/Create storage pools **
-#/api/shares/	List/Create/Manage shares
-#/api/snapshots/	List/Create snapshots
-#/api/disks/	List physical disks
-#/api/smart/	SMART status of drives
-#/api/system/	System info
