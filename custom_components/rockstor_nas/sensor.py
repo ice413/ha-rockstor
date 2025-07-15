@@ -103,3 +103,17 @@ class RockstorRockonSensor(CoordinatorEntity, SensorEntity):
             }
         }
 
+class RockstorServiceSensor(SensorEntity):
+    def __init__(self, coordinator, service):
+        self.coordinator = coordinator
+        self._service = service
+        self._attr_name = f"Rockstor {service['display_name']}"
+        self._attr_unique_id = f"rockstor_service_{service['id']}"
+
+    @property
+    def state(self):
+        return "running" if self._service["status"] else "stopped"
+
+    async def async_update(self):
+        await self.coordinator.async_request_refresh()
+

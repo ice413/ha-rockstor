@@ -97,3 +97,33 @@ class RockstorAPI:
 
         print("✅ Installed Rock-ons:", installed_rockons)
         return installed_rockons
+
+    def get_services(self):
+    url = f"{self._host}/api/sm/services"
+    try:
+        response = self._session.get(url, verify=self._verify_ssl)
+        response.raise_for_status()
+        data = response.json()
+        services = data.get("results", [])
+
+        parsed_services = [
+            {
+                "id": service["id"],
+                "name": service["name"],
+                "display_name": service["display_name"],
+                "status": service["status"],
+                "config": service["config"],
+                "count": service["count"],
+                "ts": service["ts"]
+            }
+            for service in services
+        ]
+
+        print("✅ Parsed services:", parsed_services)
+        return parsed_services
+
+    except requests.RequestException as e:
+        print("❌ Failed to fetch services:", e)
+        return []
+
+
