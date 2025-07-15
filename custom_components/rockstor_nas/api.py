@@ -136,12 +136,13 @@ class RockstorAPI:
     def toggle_service(self, service_id: int, enable: bool):
         action = "start" if enable else "stop"
         url = f"{self._host}/api/sm/services/{service_id}/{action}"
+        _LOGGER.debug("Sending %s request to: %s", action.upper(), url)
         try:
             response = self._session.post(url, verify=self._verify_ssl)
             response.raise_for_status()
-            print(f"✅ Service {service_id} {action}ed successfully.")
+            _LOGGER.debug("✅ Successfully %sed service %s", action, service_id)
             return True
         except requests.RequestException as e:
-            print(f"❌ Failed to {action} service {service_id}:", e)
+            _LOGGER.error("❌ Failed to %s service %s: %s", action, service_id, e)
             return False
     
