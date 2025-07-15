@@ -99,32 +99,37 @@ class RockstorAPI:
         return installed_rockons
 
     def get_services(self):
-        print("📡 get_services() called")
         url = f"{self._host}/api/sm/services"
-        try:
-            response = self._session.get(url, verify=self._verify_ssl)
-            response.raise_for_status()
-            data = response.json()
-            services = data.get("results", [])
+        all_services = []
     
-            parsed_services = [
-                {
-                    "id": service["id"],
-                    "name": service["name"],
-                    "display_name": service["display_name"],
-                    "status": service["status"],
-                    "config": service["config"],
-                    "count": service["count"],
-                    "ts": service["ts"]
-                }
-                for service in services
-            ]
+        while url:
+            try:
+                response = self._session.get(url, verify=self._verify_ssl)
+                response.raise_for_status()
+                data = response.json()
+                services = data.get("results", [])
     
-            print("✅ Parsed services:", parsed_services)
-            return parsed_services
+                parsed_services = [
+                    {
+                        "id": service.get("id"),
+                        "name": service.get("name"),
+                        "display_name": service.get("display_name"),
+                        "status": service.get("status"),
+                        "config": service.get("config"),
+                        "count": service.get("count"),
+                        "ts": service.get("ts")
+                    }
+                    for service in services
+                ]
     
-        except requests.RequestException as e:
-            print("❌ Failed to fetch services:", e)
-            return []
-
+                all_services.extend(parsed_services)
+                url = data.get("next")  # Follow pagination
+    
+            except requests.RequestException as e:
+                print("❌ Failed to fetch services:", e)
+                break
+            
+        print("✅ Parsed services:", all_services)
+        return all_services
+    
 

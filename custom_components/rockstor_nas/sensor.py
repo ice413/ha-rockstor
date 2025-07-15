@@ -38,11 +38,8 @@ async def async_setup_entry(hass, entry, async_add_entities):
     # Service sensors
     sensors.append(RockstorServiceSummarySensor(coordinator))
     _LOGGER.debug("Rockstor sensor setup: sensors = %s", sensors)
-    
+
     async_add_entities(sensors, True)
-
-
-
 
 class RockstorPoolSensor(CoordinatorEntity, SensorEntity):
     _attr_should_poll = False
