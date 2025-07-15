@@ -122,7 +122,8 @@ class RockstorAPI:
                         "status": service.get("status"),
                         "config": service.get("config"),
                         "count": service.get("count"),
-                        "ts": service.get("ts")
+                        "ts": service.get("ts"),
+                        "service": service.get("service")
                     }
                     for service in services
                 ]
@@ -144,7 +145,7 @@ class RockstorAPI:
         if missing_keys:
             _LOGGER.error("❌ Missing required keys in service data: %s", missing_keys)
             return False
-    
+
         url = f"{self._host}/api/sm/services/"
         payload = {
             "id": service["id"],
