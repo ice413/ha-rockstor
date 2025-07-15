@@ -139,23 +139,29 @@ class RockstorAPI:
 
 
     def toggle_service(self, service: dict, turn_on: bool):
-       url = f"{self._host}/api/sm/services/"
-       payload = {
-           "id": service["id"],
-           "name": service["name"],
-           "display_name": service["display_name"],
-           "config": service["config"],
-           "service": service["service"],
-           "status": turn_on
-       }
-       _LOGGER.debug("Sending toggle request to: %s with payload: %s", url, payload)
-       try:
-           response = self._session.post(url, json=payload, verify=self._verify_ssl)
-           response.raise_for_status()
-           _LOGGER.debug("✅ Successfully toggled service %s to %s", service["id"], turn_on)
-           return True
-       except requests.RequestException as e:
-           _LOGGER.error("❌ Failed to toggle service %s: %s", service["id"], e)
-           return False
+        required_keys = ["id", "name", "display_name", "config", "service"]
+        missing_keys = [key for key in required_keys if key not in service]
+        if missing_keys:
+            _LOGGER.error("❌ Missing required keys in service data: %s", missing_keys)
+            return False
+    
+        url = f"{self._host}/api/sm/services/"
+        payload = {
+            "id": service["id"],
+            "name": service["name"],
+            "display_name": service["display_name"],
+            "config": service["config"],
+            "service": service["service"],
+            "status": turn_on
+        }
+        _LOGGER.debug("Sending toggle request to: %s with payload: %s", url, payload)
+        try:
+            response = self._session.post(url, json=payload, verify=self._verify_ssl)
+            response.raise_for_status()
+            _LOGGER.debug("✅ Successfully toggled service %s to %s", service["id"], turn_on)
+            return True
+        except requests.RequestException as e:
+            _LOGGER.error("❌ Failed to toggle service %s: %s", service["id"], e)
+            return False
 
 
