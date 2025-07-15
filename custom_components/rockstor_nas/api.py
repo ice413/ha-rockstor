@@ -2,6 +2,11 @@ import requests
 from requests.auth import HTTPBasicAuth
 import urllib3
 
+import logging
+
+_LOGGER = logging.getLogger(__name__)
+
+
 urllib3.disable_warnings(urllib3.exceptions.InsecureRequestWarning)
 
 class RockstorAPI:
@@ -145,4 +150,4 @@ class RockstorAPI:
         except requests.RequestException as e:
             _LOGGER.error("❌ Failed to %s service %s: %s", action, service_id, e)
             return False
-    
+
