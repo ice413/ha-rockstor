@@ -99,6 +99,7 @@ class RockstorAPI:
         return installed_rockons
 
     def get_services(self):
+        print("📡 get_services() called")
         url = f"{self._host}/api/sm/services"
         try:
             response = self._session.get(url, verify=self._verify_ssl)

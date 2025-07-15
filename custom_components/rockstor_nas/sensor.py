@@ -8,15 +8,14 @@ _LOGGER = logging.getLogger(__name__)
 async def async_setup_entry(hass, entry, async_add_entities):
     coordinator = hass.data[DOMAIN][entry.entry_id]
     pool_stats = coordinator.data.get("pools", [])
-    share_stats = coordinator.data.get("shares", [])
-    rockon_stats = coordinator.data.get("rockons", [])
-    service_stats = coordinator.data.get("services", [])  # <-- Add this line
-
     _LOGGER.debug("Rockstor sensor setup: pool_stats = %s", pool_stats)
+    share_stats = coordinator.data.get("shares", [])
     _LOGGER.debug("Rockstor sensor setup: share_stats = %s", share_stats)
+    rockon_stats = coordinator.data.get("rockons", [])
     _LOGGER.debug("Rockstor sensor setup: rockon_stats = %s", rockon_stats)
-    _LOGGER.debug("Rockstor sensor setup: service_stats = %s", service_stats)  # <-- Optional debug
-
+    service_stats = coordinator.data.get("services", []) 
+    _LOGGER.debug("Rockstor sensor setup: service_stats = %s", service_stats) 
+    
     sensors = []
 
     # Pool sensors
@@ -38,7 +37,7 @@ async def async_setup_entry(hass, entry, async_add_entities):
 
     # Service sensors
     for service in service_stats:
-        sensors.append(RockstorServiceSensor(coordinator, service))  # <-- Add this line
+        sensors.append(RockstorServiceSensor(coordinator, service))
 
     async_add_entities(sensors, True)
 
