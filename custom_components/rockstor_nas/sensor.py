@@ -36,9 +36,9 @@ async def async_setup_entry(hass, entry, async_add_entities):
     sensors.append(RockstorRockonSensor(coordinator))
 
     # Service sensors
-    for service in service_stats:
-        sensors.append(RockstorServiceSensor(coordinator, service))
-
+    sensors.append(RockstorServiceSummarySensor(coordinator))
+    _LOGGER.debug("Rockstor sensor setup: sensors = %s", sensors)
+    
     async_add_entities(sensors, True)
 
 
@@ -109,18 +109,28 @@ class RockstorRockonSensor(CoordinatorEntity, SensorEntity):
             }
         }
 
-class RockstorServiceSensor(CoordinatorEntity, SensorEntity):
-    def __init__(self, coordinator, service):
-        super().__init__(coordinator)
-        self._service = service
-        self._attr_name = f"Rockstor {service['display_name']}"
-        self._attr_unique_id = f"rockstor_service_{service['id']}"
 
+class RockstorServiceSummarySensor(CoordinatorEntity, SensorEntity):
+    _attr_should_poll = False
+    _attr_native_unit_of_measurement = None
+    _attr_icon = "mdi:server-network"
+
+    def __init__(self, coordinator):
+        super().__init__(coordinator)
+        self._attr_name = "Rockstor Services"
+        self._attr_unique_id = "rockstor_services_summary"
+        self._attr_state_class = None
 
     @property
-    def state(self):
-        return "running" if self._service["status"] else "stopped"
+    def native_value(self):
+        return len(self.coordinator.data.get("services", []))
 
-    async def async_update(self):
-        await self.coordinator.async_request_refresh()
+    @property
+    def extra_state_attributes(self):
+        return {
+            "Services": {
+                service["display_name"]: "Started" if service["status"] else "Stopped"
+                for service in self.coordinator.data.get("services", [])
+            }
+        }
 
