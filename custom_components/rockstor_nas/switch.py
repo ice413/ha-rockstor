@@ -2,6 +2,7 @@ from homeassistant.components.switch import SwitchEntity
 from homeassistant.helpers.update_coordinator import CoordinatorEntity
 from .const import DOMAIN
 import logging
+
 _LOGGER = logging.getLogger(__name__)
 
 
@@ -31,7 +32,7 @@ class RockstorServiceSwitch(CoordinatorEntity, SwitchEntity):
     async def async_turn_on(self, **kwargs):
         _LOGGER.debug("Turning ON service: %s (ID: %s)", self._service["display_name"], self._service["id"])
         result = await self.hass.async_add_executor_job(
-            self.coordinator.api.toggle_service, self._service["id"], True
+            self.coordinator.api.toggle_service, self._service, True
         )
         _LOGGER.debug("Service ON result: %s", result)
         await self.coordinator.async_request_refresh()
@@ -39,7 +40,8 @@ class RockstorServiceSwitch(CoordinatorEntity, SwitchEntity):
     async def async_turn_off(self, **kwargs):
         _LOGGER.debug("Turning OFF service: %s (ID: %s)", self._service["display_name"], self._service["id"])
         result = await self.hass.async_add_executor_job(
-            self.coordinator.api.toggle_service, self._service["id"], False
+            self.coordinator.api.toggle_service, self._service, False
         )
         _LOGGER.debug("Service OFF result: %s", result)
         await self.coordinator.async_request_refresh()
+

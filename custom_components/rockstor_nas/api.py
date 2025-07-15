@@ -138,16 +138,24 @@ class RockstorAPI:
         return all_services
 
 
-    def toggle_service(self, service_id: int, enable: bool):
-        action = "start" if enable else "stop"
-        url = f"{self._host}/api/sm/services/{service_id}/{action}"
-        _LOGGER.debug("Sending %s request to: %s", action.upper(), url)
-        try:
-            response = self._session.post(url, verify=self._verify_ssl)
-            response.raise_for_status()
-            _LOGGER.debug("✅ Successfully %sed service %s", action, service_id)
-            return True
-        except requests.RequestException as e:
-            _LOGGER.error("❌ Failed to %s service %s: %s", action, service_id, e)
-            return False
+    def toggle_service(self, service: dict, turn_on: bool):
+       url = f"{self._host}/api/sm/services/"
+       payload = {
+           "id": service["id"],
+           "name": service["name"],
+           "display_name": service["display_name"],
+           "config": service["config"],
+           "service": service["service"],
+           "status": turn_on
+       }
+       _LOGGER.debug("Sending toggle request to: %s with payload: %s", url, payload)
+       try:
+           response = self._session.post(url, json=payload, verify=self._verify_ssl)
+           response.raise_for_status()
+           _LOGGER.debug("✅ Successfully toggled service %s to %s", service["id"], turn_on)
+           return True
+       except requests.RequestException as e:
+           _LOGGER.error("❌ Failed to toggle service %s: %s", service["id"], e)
+           return False
+
 
