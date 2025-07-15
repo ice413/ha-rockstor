@@ -101,14 +101,14 @@ class RockstorAPI:
     def get_services(self):
         url = f"{self._host}/api/sm/services"
         all_services = []
-    
+
         while url:
             try:
                 response = self._session.get(url, verify=self._verify_ssl)
                 response.raise_for_status()
                 data = response.json()
                 services = data.get("results", [])
-    
+
                 parsed_services = [
                     {
                         "id": service.get("id"),
@@ -121,15 +121,27 @@ class RockstorAPI:
                     }
                     for service in services
                 ]
-    
+
                 all_services.extend(parsed_services)
                 url = data.get("next")  # Follow pagination
-    
+
             except requests.RequestException as e:
                 print("❌ Failed to fetch services:", e)
                 break
-            
+
         print("✅ Parsed services:", all_services)
         return all_services
-    
 
+
+    def toggle_service(self, service_id: int, enable: bool):
+        action = "start" if enable else "stop"
+        url = f"{self._host}/api/sm/services/{service_id}/{action}"
+        try:
+            response = self._session.post(url, verify=self._verify_ssl)
+            response.raise_for_status()
+            print(f"✅ Service {service_id} {action}ed successfully.")
+            return True
+        except requests.RequestException as e:
+            print(f"❌ Failed to {action} service {service_id}:", e)
+            return False
+    
