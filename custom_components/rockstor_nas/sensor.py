@@ -103,12 +103,13 @@ class RockstorRockonSensor(CoordinatorEntity, SensorEntity):
             }
         }
 
-class RockstorServiceSensor(SensorEntity):
+class RockstorServiceSensor(CoordinatorEntity, SensorEntity):
     def __init__(self, coordinator, service):
-        self.coordinator = coordinator
+        super().__init__(coordinator)
         self._service = service
         self._attr_name = f"Rockstor {service['display_name']}"
         self._attr_unique_id = f"rockstor_service_{service['id']}"
+
 
     @property
     def state(self):
